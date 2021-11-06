@@ -62,7 +62,8 @@ class DNSTable:
 
     def debug_print(self):
         all_records = self._aRecords
-        all_records.append(self._nsRecord)
+        if self._nsRecord != None:
+            all_records.append(self._nsRecord)
         for (index, entry) in enumerate(all_records):
             host = entry.hostname
             ip = entry.ip

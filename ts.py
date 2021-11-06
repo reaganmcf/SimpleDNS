@@ -6,7 +6,7 @@ def start_ts(table, port):
     try:
         ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error as err:
-        print('Failed to open socket: {}\n'.format(err))
+        print('[TS]: Failed to open socket: {}\n'.format(err))
         exit()
         
     ss.bind(('', port))
@@ -14,10 +14,9 @@ def start_ts(table, port):
     host = socket.gethostname()
     print('[TS]: TS is alive at {}:{}'.format(host, port))
     
-    csockid, addr = ss.accept()
+    while True:
+        csockid, addr = ss.accept()
 
-    data = ""
-    while data != 'KILL':
         raw_data = csockid.recv(256)
 
         # if there is a \n at the end of the data,
@@ -26,11 +25,22 @@ def start_ts(table, port):
         if data[-1] == '\n':
             data = data[:-1]
 
-        if data == 'KILL':
-            break
-
         print('[TS]: TS received the following message:')
         print("\t\'{}\'".format(data))
+
+        record = table.lookup(data)
+        msg = ""
+        if record is None: 
+            print('[TS]: No record found.')
+            msg = "{} - Error:HOST NOT FOUND".format(hostname)
+        else:
+            print('[TS]: Found record.')
+            msg = str(record)
+
+        print('[TS] Sending back the following message:')
+        print("\t'{}'".format(msg))
+
+        csockid.send(msg.encode('utf-8'))
 
     print('[TS]: Closing... ')
     ss.close()

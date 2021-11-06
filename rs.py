@@ -6,7 +6,7 @@ def start_rs(table, port):
     try:
         ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error as err:
-        print('Failed to open socket: {}\n'.format(err))
+        print('[RS]: Failed to open socket: {}\n'.format(err))
         exit()
         
     ss.bind(('', port))
@@ -14,20 +14,16 @@ def start_rs(table, port):
     host = socket.gethostname()
     print('[RS]: RS is alive at {}:{}'.format(host, port))
     
-    csockid, addr = ss.accept()
+    while True:
+        csockid, addr = ss.accept()
 
-    data = ""
-    while data != 'KILL':
-        raw_data = csockid.recv(256)
+        raw_data = csockid.recv(2000)
 
         # if there is a \n at the end of the data,
         # then trim it
         data = str(raw_data.decode('utf-8', 'ignore')).strip()
         if len(data) > 0 and data[-1] == '\n':
             data = data[:-1]
-
-        if data == 'KILL':
-            break
 
         print('[RS]: RS received the following message:')
         print("\t'{}'".format(data))
