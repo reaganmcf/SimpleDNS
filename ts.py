@@ -32,13 +32,13 @@ def start_ts(table, port):
         msg = ""
         if record is None: 
             print('[TS]: No record found.')
-            msg = "{} - Error:HOST NOT FOUND".format(hostname)
+            msg = "{} - Error:HOST NOT FOUND".format(data)
         else:
             print('[TS]: Found record.')
             msg = str(record)
 
         print('[TS] Sending back the following message:')
-        print("\t'{}'".format(msg))
+        print("\t'{}'\n".format(msg))
 
         csockid.send(msg.encode('utf-8'))
 
