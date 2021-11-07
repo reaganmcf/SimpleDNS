@@ -1,5 +1,4 @@
 from sys import argv as Arguments
-from dns_table import DNSFlag
 import socket
 import time
 
