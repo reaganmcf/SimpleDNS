@@ -12,12 +12,12 @@ def start_rs(table, port):
     ss.bind(('', port))
     ss.listen(1)
     host = socket.gethostname()
-    print('[RS]: RS is alive at {}:{}'.format(host, port))
+    print('[RS]: RS is alive at {}:{}\n'.format(host, port))
     
     while True:
         csockid, addr = ss.accept()
 
-        raw_data = csockid.recv(2000)
+        raw_data = csockid.recv(256)
 
         # if there is a \n at the end of the data,
         # then trim it
@@ -37,7 +37,7 @@ def start_rs(table, port):
         msg = str(record)
         
         print('[RS]: Sending back the following message:')
-        print("\t'{}'".format(msg))
+        print("\t'{}'\n".format(msg))
         
         csockid.send(msg.encode('utf-8'))
 
