@@ -3,6 +3,7 @@ from dns_table import DNSFlag
 import socket
 import time
 
+DEBUG = False
 RS_HOSTNAME = ""
 RS_LISTEN_PORT = -1
 TS_LISTEN_PORT = -1
@@ -19,20 +20,24 @@ def lookup(dns_hostname, dns_port, hostname):
 
     raw_response = sock.recv(200)
     response = str(raw_response.decode('utf-8', 'ignore')).strip()
-    print("[Client]: Received response:")
-    print("\t'{}'".format(response))
+    if DEBUG:
+        print("[Client]: Received response:")
+        print("\t'{}'".format(response))
 
 
     # check if error from TS
     if 'Error:HOST NOT FOUND' in response:
-        print(response)
+        sock.close()
+        return response
     else:
         [res_hostname, res_ip, flag_or_error] = response.split(' ')
         if flag_or_error == 'A':
-            print(response)
+            sock.close()
+            return response
         elif flag_or_error == 'NS':
-            lookup(res_hostname, TS_LISTEN_PORT, hostname)
+            return lookup(res_hostname, TS_LISTEN_PORT, hostname)
         else:
+            sock.close()
             raise Exception("Unsupported DNSFlag with value {}".format(raw_flag))
     
     sock.close()
@@ -55,8 +60,8 @@ if __name__ == "__main__":
         lines = file.readlines()
         for line in lines:
             # remove \r\n from the end of each line
-            hostname = line[:-2]
-            print(hostname)
+            hostname = line
+            if len(line) > 2 and line[-2:] == '\r\n':
+                hostname = line[:-2]
             
-            lookup(RS_HOSTNAME, RS_LISTEN_PORT, hostname)
-            time.sleep(1)
+            print(lookup(RS_HOSTNAME, RS_LISTEN_PORT, hostname))
