@@ -58,10 +58,16 @@ if __name__ == "__main__":
 
     with open("PROJI-HNS.txt") as file:
         lines = file.readlines()
+
+        results = []
         for line in lines:
             # remove \r\n from the end of each line
             hostname = line
             if len(line) > 2 and line[-2:] == '\r\n':
                 hostname = line[:-2]
             
-            print(lookup(RS_HOSTNAME, RS_LISTEN_PORT, hostname))
+            results.append(lookup(RS_HOSTNAME, RS_LISTEN_PORT, hostname))
+
+        # Write results
+        with open('RESOLVED.txt', 'w') as output_file:
+            output_file.writelines(["{}\n".format(x) for x in results])
