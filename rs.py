@@ -2,18 +2,19 @@ import socket
 from sys import argv as Arguments
 from dns_table import DNSTable, DNSTableEntry, DNSFlag
 
+
 def start_rs(table, port):
     try:
         ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error as err:
         print('[RS]: Failed to open socket: {}\n'.format(err))
         exit()
-        
+
     ss.bind(('', port))
     ss.listen(1)
     host = socket.gethostname()
     print('[RS]: RS is alive at {}:{}\n'.format(host, port))
-    
+
     while True:
         csockid, addr = ss.accept()
 
@@ -35,29 +36,33 @@ def start_rs(table, port):
             print('[RS]: No record found. Sending back NS record for TS')
 
         msg = str(record)
-        
+
         print('[RS]: Sending back the following message:')
         print("\t'{}'\n".format(msg))
-        
-        csockid.send(msg.encode('utf-8'))
 
+        csockid.send(msg.encode('utf-8'))
 
     print('[RS]: Closing... ')
     ss.close()
     print('[RS]: Done.')
     exit()
-    
+
+
 if __name__ == '__main__':
-    if len(Arguments) != 2:
-        print("Expected arguments following the format: \n\n python rs.py rsListenPort\n\nPlease try again")
+    if len(Arguments) != 3:
+        print(
+            "Expected arguments following the format: \n\n python rs.py rsListenPort tsHostname\n\nPlease try again"
+        )
         exit()
-    
+
     rawPort = Arguments[1]
     try:
         port = int(rawPort)
     except:
         print("Port argument must be an integer. Please try again")
         exit()
+
+    tsHostname = Arguments[2]
 
     # create a DNS table
     table = DNSTable()
@@ -74,9 +79,12 @@ if __name__ == '__main__':
             if raw_flag == 'A':
                 flag = DNSFlag.A
             elif raw_flag == 'NS':
+                # NS should point to tsHostname instead
+                hostname = tsHostname
                 flag = DNSFlag.NS
             else:
-                raise Exception("Cannot parse {} as a DNSFlag".format(raw_flag))
+                raise Exception(
+                    "Cannot parse {} as a DNSFlag".format(raw_flag))
 
             entry = DNSTableEntry(hostname, ip, flag)
             table.add(entry)
