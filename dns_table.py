@@ -1,13 +1,17 @@
 from enum import Enum
+
+
 class DNSFlag(Enum):
     A = 1
     NS = 2
 
+
 class DNSTableEntry:
     def __init__(self, hostname, ip, flag):
         if flag != DNSFlag.A and flag != DNSFlag.NS:
-            raise Exception("DNSTableEntry.__init__: flag must be a DNSFlag type.")
-        
+            raise Exception(
+                "DNSTableEntry.__init__: flag must be a DNSFlag type.")
+
         self._hostname = hostname.lower()
         self._ip = ip
         self._flag = flag
@@ -33,6 +37,7 @@ class DNSTableEntry:
 
         return "{} {} {}".format(self._hostname, self._ip, flag)
 
+
 class DNSTable:
     def __init__(self):
         self._aRecords = []
@@ -40,18 +45,20 @@ class DNSTable:
 
     def add(self, table_entry):
         if not isinstance(table_entry, DNSTableEntry):
-            raise Exception("DNSTable.add: table_entry must be an instance of DNSTableEntry")
+            raise Exception(
+                "DNSTable.add: table_entry must be an instance of DNSTableEntry"
+            )
 
         if table_entry.flag == DNSFlag.NS:
             self._nsRecord = table_entry
         else:
             self._aRecords.append(table_entry)
-    
+
     def lookup(self, hostname):
         if not isinstance(hostname, str):
             raise Exception("DNSTable.lookup: hostname must be a str type")
 
-        # ignore case 
+        # ignore case
         hostname = hostname.lower()
 
         matches = [x for x in self._aRecords if x.hostname == hostname]
@@ -69,5 +76,6 @@ class DNSTable:
             ip = entry.ip
             flag = entry.flag
 
-            output = "[Rec {}]: Host: {}, IP: {}, Flag: {}".format(index, host, ip, flag)
+            output = "[Rec {}]: Host: {}, IP: {}, Flag: {}".format(
+                index, host, ip, flag)
             print(output)

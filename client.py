@@ -7,6 +7,7 @@ RS_HOSTNAME = ""
 RS_LISTEN_PORT = -1
 TS_LISTEN_PORT = -1
 
+
 def lookup(dns_hostname, dns_port, hostname):
     try:
         sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +24,6 @@ def lookup(dns_hostname, dns_port, hostname):
         print("[Client]: Received response:")
         print("\t'{}'".format(response))
 
-
     # check if error from TS
     if 'Error:HOST NOT FOUND' in response:
         sock.close()
@@ -37,13 +37,17 @@ def lookup(dns_hostname, dns_port, hostname):
             return lookup(res_hostname, TS_LISTEN_PORT, hostname)
         else:
             sock.close()
-            raise Exception("Unsupported DNSFlag with value {}".format(raw_flag))
-    
+            raise Exception(
+                "Unsupported DNSFlag with value {}".format(raw_flag))
+
     sock.close()
+
 
 if __name__ == "__main__":
     if len(Arguments) != 4:
-        print("Expected arguments following the format: \n\n python client.py rsHostname rsListenPort tsListenPort\n\nPlease try again")
+        print(
+            "Expected arguments following the format: \n\n python client.py rsHostname rsListenPort tsListenPort\n\nPlease try again"
+        )
         exit()
 
     RS_HOSTNAME = Arguments[1]
@@ -64,7 +68,7 @@ if __name__ == "__main__":
             hostname = line
             if len(line) > 2 and line[-2:] == '\r\n':
                 hostname = line[:-2]
-            
+
             results.append(lookup(RS_HOSTNAME, RS_LISTEN_PORT, hostname))
 
         # Write results

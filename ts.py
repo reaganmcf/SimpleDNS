@@ -2,18 +2,19 @@ import socket
 from sys import argv as Arguments
 from dns_table import DNSTable, DNSTableEntry, DNSFlag
 
+
 def start_ts(table, port):
     try:
         ss = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     except socket.error as err:
         print('[TS]: Failed to open socket: {}\n'.format(err))
         exit()
-        
+
     ss.bind(('', port))
     ss.listen(1)
     host = socket.gethostname()
     print('[TS]: TS is alive at {}:{}'.format(host, port))
-    
+
     while True:
         csockid, addr = ss.accept()
 
@@ -30,7 +31,7 @@ def start_ts(table, port):
 
         record = table.lookup(data)
         msg = ""
-        if record is None: 
+        if record is None:
             print('[TS]: No record found.')
             msg = "{} - Error:HOST NOT FOUND".format(data)
         else:
@@ -46,12 +47,15 @@ def start_ts(table, port):
     ss.close()
     print('Done.')
     exit()
-    
+
+
 if __name__ == '__main__':
     if len(Arguments) != 2:
-        print("Expected arguments following the format: \n\n python ts.py tsListenPort\n\nPlease try again")
+        print(
+            "Expected arguments following the format: \n\n python ts.py tsListenPort\n\nPlease try again"
+        )
         exit()
-    
+
     rawPort = Arguments[1]
     try:
         port = int(rawPort)
@@ -76,7 +80,8 @@ if __name__ == '__main__':
             elif raw_flag == 'NS':
                 flag = DNSFlag.NS
             else:
-                raise Exception("Cannot parse {} as a DNSFlag".format(raw_flag))
+                raise Exception(
+                    "Cannot parse {} as a DNSFlag".format(raw_flag))
 
             entry = DNSTableEntry(hostname, ip, flag)
             table.add(entry)
