@@ -2,6 +2,8 @@
 
 > A simplified DNS system consisting of a client program and two server programs: RS (a simplified root DNS server) and TS (a simplified top-level DNS server)
 
+![](https://i.imgur.com/zuprYKE.png)
+
 ## Usage
 1. Start the TS server
 ```bash
